@@ -1,0 +1,31 @@
+[project]
+name = "DICOMLogic"
+version = "0.1.0"
+description = "Logic for working with DICOM"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "License.txt"}
+keywords = ["dicom", "medical", "imaging"]
+authors = [
+  {name = "Steve Pieper", email = "pieper@isomics.com"}
+]
+maintainers = [
+  {name = "Steve Pieper", email = "pieper@isomics.com"}
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  'Topic :: Scientific/Engineering :: Medical Science Apps.',
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = [
+  "pydicom"
+]
+
+[project.urls]  # Optional
+"Homepage" = "https://github.com/pieper/DICOMLogic"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
