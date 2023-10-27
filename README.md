@@ -8,12 +8,12 @@ and [CommonTK](https://commontk.org) projects.
 ## Initial Use Cases
 
 The initial driving application for this package is to:
-* Populate an SQLite database according to the [ctkDICOM schema]([url](https://github.com/commontk/CTK/blob/master/Libs/DICOM/Core/Resources/dicom-schema.sql)) using metadata obtained from [DICOMweb]([url](https://www.dicomstandard.org/using/dicomweb)) or [AWS Health Imaging]([url](https://aws.amazon.com/healthimaging/)).
+* Populate an SQLite database according to the [ctkDICOM schema](https://github.com/commontk/CTK/blob/master/Libs/DICOM/Core/Resources/dicom-schema.sql) using metadata obtained from [DICOMweb](https://www.dicomstandard.org/using/dicomweb) or [AWS Health Imaging](https://aws.amazon.com/healthimaging/).
   * This may be generalized in the future to obtain metadata with pydicom or DIMSE.
   * This may be generalized to other database back ends in the future
 * Provide the ability to load bulk data (such PixelData) from networked sources such as DICOMweb and AHI.
   * This may be generalized to load from local files in the future
-* Provide adaptors to provide higher-level data structures assembled from the contents of DICOM instances.  These adapters will be modeled after the functionality of [3D Slicer's DICOM Plugins]([url](https://slicer.readthedocs.io/en/latest/user_guide/modules/dicom.html)) but with only python native dependencies.  The outputs of these adaptors can either be output in standard research formats like nrrd, or consumed directly by applications as python buffers with metadata.  The adaptors will provide DICOM consistency checks, such as checking that slices are parallel and equally spaced when exporting a volume.
+* Provide adaptors to provide higher-level data structures assembled from the contents of DICOM instances.  These adapters will be modeled after the functionality of [3D Slicer's DICOM Plugins](https://slicer.readthedocs.io/en/latest/user_guide/modules/dicom.html) but with only python native dependencies.  The outputs of these adaptors can either be output in standard research formats like nrrd, or consumed directly by applications as python buffers with metadata.  The adaptors will provide DICOM consistency checks, such as checking that slices are parallel and equally spaced when exporting a volume.
   * Like the plugins in 3D Slicer, it will be possible to extend the adaptor infrastucture to support various ways of interpreting the DICOM data as needed in various application scenarios.
 
 ## Motivations
