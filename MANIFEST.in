@@ -1,4 +1,4 @@
 include *.py
 include *.md
-graft DICOMLogic/*
+graft src/*
 global-exclude *~
