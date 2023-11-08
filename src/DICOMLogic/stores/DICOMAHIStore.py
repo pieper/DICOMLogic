@@ -19,9 +19,6 @@ import ahi_retrieve as ahi
 
 from DICOMLogic.stores.DICOMStore import DICOMStore
 
-# TODO
-import slicer
-
 class DICOMAHIStore(DICOMStore):
 
     def __init__(self, db, datastoreId=None):
@@ -47,7 +44,6 @@ class DICOMAHIStore(DICOMStore):
 
     def indexImageSet(self, imageSetMetadata):
         self.db.startBatchInsert()
-        import slicer #TODO
         dataset = pydicom.Dataset()
         levels = ['Patient', 'Study']
         for level in levels:
@@ -70,10 +66,6 @@ class DICOMAHIStore(DICOMStore):
                         vr = pydicom.datadict.dictionary_VR(tagName)
                         if vr != 'SQ':
                             instanceDataset[tagName] = pydicom.DataElement(tagName, vr, value)
-                #TODO
-                slicer.modules.instanceDataset = instanceDataset
-                slicer.modules.instanceMetadata = instanceMetadata
-
                 frameURL = f"ahi://{self.datastoreId}"
                 frameURL += f"/{imageSetMetadata['ImageSetID']}"
                 frameURL += f"/{instanceDataset.SeriesInstanceUID}"
@@ -87,7 +79,7 @@ class DICOMAHIStore(DICOMStore):
 
     def indexDatastore(self):
         """
-        Get all image sets in the AHI DICOM datastore and 
+        Get all image sets in the AHI DICOM datastore and
         insert all the instances in to the database.
         """
         searchCriteria= {
@@ -101,8 +93,6 @@ class DICOMAHIStore(DICOMStore):
         response = self.client.search_image_sets(
                     datastoreId=self.datastoreId,
                     searchCriteria=searchCriteria)
-        # TODO
-        slicer.modules.response = response
         for imageSetsMetadataSummary in response['imageSetsMetadataSummaries']:
             metadataResponse = self.client.get_image_set_metadata(
                     datastoreId = self.datastoreId,
@@ -110,10 +100,7 @@ class DICOMAHIStore(DICOMStore):
             gzippedMetadata = metadataResponse['imageSetMetadataBlob'].read()
             imageSetJSON = gzip.decompress(gzippedMetadata)
             imageSetMetadata = json.loads(imageSetJSON)
-            slicer.modules.imageSetMetadata = imageSetMetadata
             self.indexImageSet(imageSetMetadata)
-            # TODO
-            #break
 
     def startRequest(self, urls):
         """
@@ -136,9 +123,6 @@ class DICOMAHIStore(DICOMStore):
             frames = ahiRequest['Study']['Series'][seriesUID]['Instances'][sopInstanceID]['ImageFrames']
             frames.append({"ID": imageFrameId, "FrameSizeInBytes": 0})
             self.urlsByImageFrameID[imageFrameId] = url
-        # TODO
-        slicer.modules.ahiRequest = ahiRequest
-        print(json.dumps(ahiRequest))
         self.handler.request_frames(json.dumps(ahiRequest))
 
     def getFrames(self):

@@ -157,6 +157,8 @@ class ctkSQLite(DICOMDatabase):
         self.seriesThisBatch = []
 
     def cacheTags(self, cacheTagValues):
+        import slicer
+        slicer.modules.cacheTagValues = cacheTagValues
         # TODO: remove duplicates?
         try:
             self.cursorTagCache.execute("SELECT * from TagCache LIMIT 1")
