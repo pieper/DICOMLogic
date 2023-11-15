@@ -26,8 +26,9 @@ class ctkSQLite(DICOMDatabase):
     compatibility.
     """
 
-    SchemaURL = "https://raw.githubusercontent.com/commontk/CTK/master/Libs/DICOM/Core/Resources/dicom-schema.sql"
-    SchemaVersion = "0.7.0"
+    #SchemaURL = "https://raw.githubusercontent.com/commontk/CTK/master/Libs/DICOM/Core/Resources/dicom-schema.sql"
+    SchemaURL = "https://raw.githubusercontent.com/pieper/CTK/virtualize-database/Libs/DICOM/Core/Resources/dicom-schema.sql"
+    SchemaVersion = "0.8.0"
 
     #/// Flag for tag cache to avoid
     # repeated searches for tags that do no exist
@@ -231,14 +232,15 @@ class ctkSQLite(DICOMDatabase):
         # always insert instance and tags to cache
         try:
             self.cursor.execute(f"""
-                INSERT OR REPLACE INTO Images
-                ("SOPInstanceUID", "Filename", "SeriesInstanceUID",
+                INSERT INTO Images
+                ("SOPInstanceUID", "Filename", "URL", "SeriesInstanceUID",
                  "InsertTimestamp", "DisplayedFieldsUpdatedTimestamp")
-                VALUES(?, ?, ?, ?, NULL)
-            """, ctkSQLite.stringList(ds.SOPInstanceUID, frameURL,
+                VALUES(?, ?, ?, ?, ?, NULL)
+            """, ctkSQLite.stringList(ds.SOPInstanceUID, "", frameURL,
                             ds.SeriesInstanceUID, timestamp))
-        except sqlite3.IntegrityError:
+        except sqlite3.IntegrityError as error:
             logging.warn('ignoring duplicate instance error')
+            logging.warn(" ".join(error.args))
 
         # populate the tag cache
         sopInstanceID = str(ds.SOPInstanceUID)
