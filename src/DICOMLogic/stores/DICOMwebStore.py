@@ -99,14 +99,22 @@ class DICOMwebStore(DICOMStore):
                 logging.debug(f"Resending request for {url}")
                 self.makeQtRequest(url)
 
-    def getFrames(self):
+    def getFrames(self, requestedURLs):
         """
         Returns any available frames corresponding to requested URLs.
+        Because the frames may have been requested by multiple requesters,
+        only return the frames corresponding to the ones in the urls parameter
+        and save the others for later.  Remove the urls for returned frames
+        from the list of frames by url.
         TODO: handle any error codes
         """
-        framesByURL = self.framesByURL
-        self.framesByURL = {}
-        return(framesByURL)
+        framesByURLForURLs = {}
+        for url in self.framesByURL.keys():
+            if url in requestedURLs:
+                framesByURLForURLs[url] = self.framesByURL[url]
+        for url in framesByURLForURLs:
+            del(self.framesByURL[url])
+        return(framesByURLForURLs)
 
     def requestFinished(self):
         if self._haveQT:
