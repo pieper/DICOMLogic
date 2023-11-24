@@ -25,6 +25,8 @@ class DICOMAHIStore(DICOMStore):
         self.db = db
         self.datastoreId = datastoreId
 
+        self.retrievedFramesByURL = {}
+
         # Initialize the module
         config = ahi.AHIRetrieveConfig()
         config.region = os.getenv("AWS_DEFAULT_REGION")
@@ -125,19 +127,26 @@ class DICOMAHIStore(DICOMStore):
             self.urlsByImageFrameID[imageFrameId] = url
         self.handler.request_frames(json.dumps(ahiRequest))
 
-    def getFrames(self):
+    def getFrames(self, requestedURLs):
         """
         Returns any available frames corresponding to requested URLs.
         TODO: handle any error codes
         """
-        framesByURL = {}
+        # first, get any new frames that are available
+        # and add them to frame store for use now or later
         responses = self.handler.get_frame_responses()
         for i in responses:
             data = np.array(i, copy = False)
             url = self.urlsByImageFrameID[i.imageFrameId]
+            self.retrievedFramesByURL[url] = data
             del(self.urlsByImageFrameID[i.imageFrameId])
-            framesByURL[url] = data
-        return(framesByURL)
+        # second, look for requested urls in store and return them
+        framesByURLForURLs = {}
+        for url in requestedURLs:
+            if url in self.retrievedFramesByURL:
+                framesByURLForURLs[url] = self.retrievedFramesByURL[url]
+                del(self.retrievedFramesByURL[url])
+        return(framesByURLForURLs)
 
     def requestFinished(self):
         # TODO: return self.handler.is_busy() == False
