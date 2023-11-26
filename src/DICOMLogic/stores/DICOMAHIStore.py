@@ -12,7 +12,8 @@ import time
 try:
     import boto3
 except ModuleNotFoundError:
-    pip_install('boto3')
+    import slicer
+    slicer.util.pip_install('boto3')
     import boto3
 
 import ahi_retrieve as ahi
@@ -38,10 +39,7 @@ class DICOMAHIStore(DICOMStore):
         config.logLevel = 4 # INFO
         config.logLevel = 6 # TRACE
         config.logLevel = 0 # None
-        ahi.init(config)
-
-        # Create handler
-        self.handler = ahi.AHIRequestHandler()
+        self.handler = ahi.init(config)
         self.client = boto3.client("medical-imaging")
 
     def indexImageSet(self, imageSetMetadata):
@@ -125,7 +123,8 @@ class DICOMAHIStore(DICOMStore):
             frames = ahiRequest['Study']['Series'][seriesUID]['Instances'][sopInstanceID]['ImageFrames']
             frames.append({"ID": imageFrameId, "FrameSizeInBytes": 0})
             self.urlsByImageFrameID[imageFrameId] = url
-        self.handler.request_frames(json.dumps(ahiRequest))
+        requestAsJSON = json.dumps(ahiRequest)
+        self.handler.request_frames(requestAsJSON)
 
     def getFrames(self, requestedURLs):
         """
