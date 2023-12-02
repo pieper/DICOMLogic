@@ -5,6 +5,11 @@ This package was formed by factoring out or reimplementing and expanding on
 code developed over the last several years by the [3D Slicer](https://slicer.org)
 and [CommonTK](https://commontk.org) projects.
 
+## Usage
+
+As of November, 2023, a preview version is available for Linux machine for use with Amazon Health Imaging.  Instructions for testing it are [on the wiki](https://github.com/pieper/DICOMLogic/wiki/Status%E2%80%90RSNA2023).
+
+
 ## Initial Use Cases
 
 The initial driving application for this package is to:
