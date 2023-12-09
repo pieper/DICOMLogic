@@ -13,11 +13,6 @@ startTime = time.time()
 dbDirectory = "/opt/data/LNQ/timc-batch2/db"
 overallStudyLimit = 10 ;# only request this many studies
 
-# url = "https://d33do7qe4w26qo.cloudfront.net/dicomweb"
-# TODO: this url is not for general use!
-#url = "https://testing-proxy.canceridc.dev/current/viewer-only-no-downloads-see-tinyurl-dot-com-slash-3j3d9jyp/dicomWeb"
-#url = "https://healthcare.googleapis.com/v1/projects/bwh-lnq-gcp-1620235879/locations/us-central1/datasets/sdp-performance-testing/dicomStores/sdp-performance-testing/dicomWeb"
-
 url = "https://healthcare.googleapis.com/v1/projects/bwh-lnq-gcp-1620235879/locations/us-central1/datasets/time-batch2/dicomStores/time-batch2/dicomWeb"
 
 def getGCPToken():
