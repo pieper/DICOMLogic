@@ -1,3 +1,4 @@
+import functools
 import json
 import logging
 import numpy as np
@@ -9,6 +10,7 @@ try:
 except ModuleNotFoundError:
     pass
 
+import DICOMLogic
 from DICOMLogic.stores.DICOMStore import DICOMStore
 
 class DICOMwebStore(DICOMStore):
@@ -94,7 +96,6 @@ class DICOMwebStore(DICOMStore):
             url = self.urlsByReply[reply]
             del(self.urlsByReply[reply])
             content = reply.readAll().data()
-            import slicer
             if not self.frameFromReplyContent(url, content):
                 logging.debug(f"Resending request for {url}")
                 self.makeQtRequest(url)
@@ -122,3 +123,44 @@ class DICOMwebStore(DICOMStore):
         else:
             # for sync requests
             return True
+
+    #
+    # infrastructure for getting instance metadata from dicom store
+    # here, file is really a frameURL since we are mocking the ctkDICOMDatabase API
+    # so we use the method provide by the DICOMStore to fetch metadata
+    # and store it here for faster access
+    #
+
+    @functools.lru_cache(maxsize=100)
+    def seriesMetadata(self, seriesURL):
+        seriesRequest = requests.get(seriesURL, headers=self.headers)
+        seriesMetadata = json.loads(seriesRequest.content)
+        tag = DICOMLogic.databases.DICOMDatabase.dicomTagNoComma("SOPInstanceUID")
+        instanceMetadataByUID = {}
+        for metadata in seriesMetadata:
+            instanceUID = metadata[tag]["Value"][0]
+            instanceMetadataByUID[instanceUID] = metadata
+        return(instanceMetadataByUID)
+
+    @functools.lru_cache(maxsize=10000)
+    def instanceMetadata(self, frameURL):
+        seriesURL = frameURL[:frameURL.find("instances")] + "metadata"
+        instanceMetadataByUID = self.seriesMetadata(seriesURL)
+        instanceUID = frameURL[frameURL.find("instances/"):].split("/")[1]
+        return(instanceMetadataByUID[instanceUID])
+
+    @functools.lru_cache(maxsize=10000)
+    def fileValue(self, file, tag):
+        metadata = self.instanceMetadata(file)
+        tag = tag.replace(",", "").upper()
+        value = ""
+        if tag in metadata:
+            value = metadata[tag]["Value"]
+            if len(value) == 1:
+                value = str(value[0])
+            else:
+                value = "\\".join(map(str, value))
+        return(value)
+
+    def fileValueExists(self, file, tag):
+        return(self.fileValue(file, tag) != "")
